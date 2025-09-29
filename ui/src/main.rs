@@ -7,7 +7,7 @@ use interactive::InteractiveMode;
 
 #[derive(Parser)]
 #[command(name = "netupi")]
-#[command(about = "🍅 A minimalist Pomodoro timer with persistence")]
+#[command(about = "🌻 A minimalist Pomodoro timer with persistence")]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -78,7 +78,7 @@ async fn main() -> Result<(), PersistenceError> {
 }
 
 async fn handle_single_command(command: Commands) -> Result<(), PersistenceError> {
-    println!("🍅 Netupi23 - Minimalist Timer");
+    println!("🌻 Netupi23 - Minimalist Timer");
     println!("==============================");
 
     let mut core = NetupiCore::new().await?;
