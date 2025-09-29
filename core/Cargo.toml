@@ -1,9 +1,14 @@
 [package]
-name = "netupi_core"
-version = "0.1.0"
+name = "netupi-core"
+version = "0.1.1"
 edition = "2024"
 authors = ["Gazter <gatzervi@proton.me>"]
+description = "Core library for Netupi23 time tracking (timers, persistence)"
 license = "AGPL-3.0-or-later"
+repository = "https://github.com/gatzer455/netupi23"  # Match ui
+homepage = "https://github.com/gatzer455/netupi23"
+keywords = ["time-tracking", "pomodoro", "persistence", "rust"]
+categories = ["date-and-time"]
 
 [lib]
 name = "netupi_core"

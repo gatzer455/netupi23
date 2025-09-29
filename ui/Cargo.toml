@@ -1,8 +1,15 @@
 [package]
-name = "netupi_ui"
-version = "0.1.0"
+name = "netupi23"
+version = "0.2.3"
 edition = "2024"
 authors = ["Gazter <gatzervi@proton.me>"]
+description = "Minimalist TimeTracker With Memory"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/gatzer455/netupi23"
+keywords = ["cli", "pomodoro", "time-tracking", "productivity"]
+categories = ["command-line-utilities"]
+readme = "../README.md"
+
 
 # This creates a binary named "netupi"
 [[bin]]
@@ -11,7 +18,7 @@ path = "src/main.rs"
 
 [dependencies]
 # Our core functionality
-netupi_core = { path = "../core" }
+netupi-core = { path = "../core" }
 
 # Async runtime
 tokio = { version = "1.47", features = ["full"] }
