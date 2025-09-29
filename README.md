@@ -132,7 +132,7 @@ Netupi23 is actively being developed. Current focus areas:
 
 ### 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the AGPL 3.0 License - see the [LICENSE](LICENSE.md) file for details.
 
 ### 🙏 Acknowledgments
 
@@ -270,7 +270,7 @@ Netupi23 está siendo desarrollado activamente. Áreas de enfoque actuales:
 
 ### 📄 Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+Este proyecto está licenciado bajo la Licencia AGPL 3.0 - ver el archivo [LICENSE.md](LICENSE.md) para detalles.
 
 ### 🙏 Agradecimientos
 
