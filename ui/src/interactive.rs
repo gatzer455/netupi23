@@ -1,3 +1,4 @@
+use chrono::Duration;
 use crossterm::style::Stylize;
 use netupi_core::{NetupiCore, PersistenceError, TimerState, TimerType};
 use rustyline::DefaultEditor;
@@ -137,6 +138,9 @@ impl InteractiveMode {
             "resume" => self.cmd_resume().await,
             "projects" => self.cmd_projects().await,
             "today" => self.cmd_today().await,
+            "project" => self.cmd_project(&parts[1..]).await,
+            "delete-project" => self.cmd_delete_project(&parts[1..]).await,
+
             "exit" | "quit" | "q" => std::process::exit(0),
             _ => {
                 println!(
@@ -281,6 +285,10 @@ impl InteractiveMode {
         println!("  resume                      - Resume paused timer");
         println!("  projects                    - List all projects");
         println!("  today                       - Show today's work summary");
+        println!("  project <name>              - Show details and sessions for a project");
+        println!(
+            "  delete-project <name>       - Delete all sessions for a project (irreversible!)"
+        );
         println!("  clear (or cls)              - Clear screen");
         println!("  help (or h)                 - Show this help");
         println!("  exit/quit (or q)            - Exit interactive mode");
@@ -363,6 +371,94 @@ impl InteractiveMode {
             }
         }
 
+        println!();
+        Ok(())
+    }
+
+    async fn cmd_project(&mut self, args: &[&str]) -> Result<(), PersistenceError> {
+        if args.is_empty() {
+            println!("❌ Usage: project <project-name>");
+            println!("   Example: project \"test_project\"");
+            return Ok(());
+        }
+
+        let project = args[0].to_string();
+        let sessions = self.core.get_sessions_for_project(&project).await?;
+
+        if sessions.is_empty() {
+            println!("❌ No sessions found for project '{}'.", project);
+            return Ok(());
+        }
+
+        // Calculate total duration
+        let total_duration: Duration = sessions.iter().map(|s| s.duration).sum();
+        let total_minutes = total_duration.num_minutes();
+        let total_hours = total_minutes / 60;
+        let total_mins = total_minutes % 60;
+
+        println!("📊 Project Details: {}", project);
+        println!("=========================");
+        if total_hours > 0 {
+            println!("Total time: {} hours {} minutes", total_hours, total_mins);
+        } else {
+            println!("Total time: {} minutes", total_mins);
+        }
+        println!("\nSessions:");
+        for session in sessions {
+            let start_str = session.start_time.format("%Y-%m-%d %H:%M").to_string();
+            let end_str = session
+                .end_time
+                .map(|end| end.format("%Y-%m-%d %H:%M").to_string())
+                .unwrap_or("Ongoing".to_string());
+            let dur_mins = session.duration.num_minutes();
+            let dur_str = if dur_mins >= 60 {
+                let h = dur_mins / 60;
+                let m = dur_mins % 60;
+                format!("{} hours {} minutes", h, m)
+            } else {
+                format!("{} minutes", dur_mins)
+            };
+            println!(
+                "- {}: End: {} ({}) | Description: {}",
+                start_str,
+                end_str,
+                dur_str,
+                session.description.as_deref().unwrap_or("None")
+            );
+        }
+        println!();
+        Ok(())
+    }
+
+    async fn cmd_delete_project(&mut self, args: &[&str]) -> Result<(), PersistenceError> {
+        if args.is_empty() {
+            println!("❌ Usage: delete-project <project-name>");
+            println!("   ⚠️  This deletes ALL sessions for the project!");
+            return Ok(());
+        }
+
+        let project = args[0].to_string();
+        println!("⚠️  About to delete all sessions for '{}'.", project);
+        println!("   This is irreversible! Type 'y' to confirm:");
+
+        // Simple y/n prompt (using readline)
+        let confirm = self.editor.readline("Confirm (y/n): ").ok();
+        if confirm.as_deref() != Some("y") && confirm.as_deref() != Some("Y") {
+            println!("❌ Deletion cancelled.");
+            return Ok(());
+        }
+
+        match self.core.delete_project_sessions(&project).await {
+            Ok(deleted) => {
+                if deleted > 0 {
+                    println!("✅ Deleted {} session(s) for '{}'.", deleted, project);
+                    println!("💾 Data updated.");
+                } else {
+                    println!("ℹ️  No sessions found for '{}' to delete.", project);
+                }
+            }
+            Err(e) => println!("❌ Error deleting: {}", e),
+        }
         println!();
         Ok(())
     }

@@ -388,6 +388,59 @@ impl NetupiCore {
 
         Ok(project_totals)
     }
+    
+    /// Get all completed stopwatch sessions for a specific project (first tag match).
+    /// Returns sorted by end_time descending (newest first).
+    pub async fn get_sessions_for_project(
+        &self,
+        project: &str,
+    ) -> Result<Vec<WorkSession>, PersistenceError> {
+        let sessions = self.timer_engine.persistence.load_sessions().await?;
+        let mut project_sessions: Vec<WorkSession> = sessions
+            .into_iter()
+            .filter(|s| {
+                s.session_type == TimerType::Stopwatch
+                    && s.end_time.is_some()
+                    && !s.tags.is_empty()
+                    && s.tags[0] == project
+            })
+            .collect();
+        // Sort by end_time descending (newest first)
+        project_sessions.sort_by(|a, b| {
+            b.end_time
+                .unwrap_or(Utc::now())
+                .cmp(&a.end_time.unwrap_or(Utc::now()))
+        });
+        Ok(project_sessions)
+    }
+
+    /// Delete all completed stopwatch sessions for a specific project (first tag match).
+    /// Returns the number of sessions deleted.
+    pub async fn delete_project_sessions(
+        &self,
+        project: &str,
+    ) -> Result<usize, PersistenceError> {
+        let mut sessions = self.timer_engine.persistence.load_sessions().await?;
+        let before_len = sessions.len();
+        sessions.retain(|s| {
+            !(s.session_type == TimerType::Stopwatch
+                && s.end_time.is_some()
+                && !s.tags.is_empty()
+                && s.tags[0] == project)
+        });
+        let deleted_count = before_len - sessions.len();
+        if deleted_count > 0 {
+            let json = serde_json::to_string_pretty(&sessions)?;
+            tokio::fs::write(
+                &self.timer_engine.persistence.sessions_file,
+                json,
+            )
+            .await?;
+        }
+        Ok(deleted_count)
+    }
+
+    
 }
 
 // =============================================================================

@@ -41,6 +41,16 @@ enum Commands {
     Projects,
     /// Show today's work summary
     Today,
+    /// Show details for a specific project
+    Project {
+        /// Project name
+        project: String,
+    },
+    /// Delete all sessions for a specific project
+    DeleteProject {
+        /// Project name
+        project: String,
+    },
     /// Generate work time reports
     Report {
         /// Filter by specific project
@@ -101,6 +111,8 @@ async fn handle_single_command(command: Commands) -> Result<(), PersistenceError
         Commands::Log => show_work_log(&mut core).await,
         Commands::Projects => show_projects(&mut core).await,
         Commands::Today => show_today_summary(&mut core).await,
+        Commands::Project { project } => show_project_details(&mut core, project).await,
+        Commands::DeleteProject { project } => delete_project(&mut core, project).await,
         Commands::Report { project, days } => generate_report(&mut core, project, days).await,
         Commands::Status => show_status(&mut core).await,
     }
@@ -272,6 +284,72 @@ async fn show_today_summary(core: &mut NetupiCore) -> Result<(), PersistenceErro
     println!();
     Ok(())
 }
+
+async fn show_project_details(core: &mut NetupiCore, project: String) -> Result<(), PersistenceError> {
+    let sessions = core.get_sessions_for_project(&project).await?;
+
+    if sessions.is_empty() {
+        println!("❌ No sessions found for project '{}'.", project);
+        return Ok(());
+    }
+
+    // Calculate total duration
+    let total_duration: chrono::Duration = sessions.iter().map(|s| s.duration).sum();
+    let total_minutes = total_duration.num_minutes();
+    let total_hours = total_minutes / 60;
+    let total_mins = total_minutes % 60;
+
+    println!("📊 Project Details: {}", project);
+    println!("=========================");
+    if total_hours > 0 {
+        println!("Total time: {} hours {} minutes", total_hours, total_mins);
+    } else {
+        println!("Total time: {} minutes", total_mins);
+    }
+    println!("\nSessions:");
+    for session in sessions {
+        let start_str = session.start_time.format("%Y-%m-%d %H:%M").to_string();
+        let end_str = session.end_time
+            .map(|end| end.format("%Y-%m-%d %H:%M").to_string())
+            .unwrap_or("Ongoing".to_string());
+        let dur_mins = session.duration.num_minutes();
+        let dur_str = if dur_mins >= 60 {
+            let h = dur_mins / 60;
+            let m = dur_mins % 60;
+            format!("{} hours {} minutes", h, m)
+        } else {
+            format!("{} minutes", dur_mins)
+        };
+        println!(
+            "- {}: End: {} ({}) | Description: {}",
+            start_str,
+            end_str,
+            dur_str,
+            session.description.as_deref().unwrap_or("None")
+        );
+    }
+    println!();
+    Ok(())
+}
+
+
+async fn delete_project(core: &mut NetupiCore, project: String) -> Result<(), PersistenceError> {
+    println!("⚠️  Deleting all sessions for '{}' (irreversible).", project);
+    match core.delete_project_sessions(&project).await {
+        Ok(deleted) => {
+            if deleted > 0 {
+                println!("✅ Deleted {} session(s).", deleted);
+                println!("💾 Data updated.");
+            } else {
+                println!("ℹ️  No sessions found for '{}' to delete.", project);
+            }
+        }
+        Err(e) => println!("❌ Error deleting: {}", e),
+    }
+    println!();
+    Ok(())
+}
+
 
 async fn generate_report(
     _core: &mut NetupiCore,

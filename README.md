@@ -6,16 +6,16 @@
 
 ## English
 
-**Inspired by and forked from the work of [4DA](https://github.com/4DA)**  
+**Inspired by and forked from the work of [4DA](https://github.com/4DA)**
 *All acknowledgments to 4DA for the original concept and inspiration that made this project possible.*
 
 A minimalist time tracking application written in Rust. Perfect for developers, freelancers, and anyone who wants to track their work time efficiently.
 
 ### ✨ Current Features
 
-- **🍅 Pomodoro Timer**: 25-minute focused work sessions 
+- **🍅 Pomodoro Timer**: 25-minute focused work sessions
 - **☕ Break Timer**: 5-minute break sessions
-- **📊 Project Time Tracking**: Track time across different projects with persistent storage
+- **📊 Project Time Tracking**: Track time across different projects with persistent storage, including listing totals, daily summaries, session details, and deletion
 - **💾 Local Data Storage**: All sessions saved locally in JSON format
 - **🚀 Interactive Mode**: Intuitive command-line interface with history and auto-completion
 - **⚡ Auto-stop Feature**: Starting a new timer automatically stops the current one
@@ -35,6 +35,8 @@ cargo run
 
 ### 📋 Available Commands
 
+### 📋 Available Commands
+
 | Command | Aliases | Description |
 |---------|---------|-------------|
 | `work <project-name> [description]` | | Start tracking work time for a specific project |
@@ -42,11 +44,15 @@ cargo run
 | `break` | | Start a 5-minute break timer |
 | `stop` | | Stop the current timer and save the session |
 | `status` | `s` | Show current timer status and elapsed time |
-| `projects` | | List all projects (coming soon) |
-| `today` | | Show today's work summary (coming soon) |
+| `projects` | | List all projects with total time spent |
+| `today` | | Show today's work summary by project |
+| `project <name>` | | Show details and sessions for a specific project |
+| `delete-project <name>` | | Delete all sessions for a project (irreversible!) |
 | `help` | `h` | Show available commands |
 | `clear` | `cls` | Clear the terminal screen |
 | `exit` | `quit`, `q` | Exit the application |
+
+*Single-command mode: Prefix with `netupi` (e.g., `netupi projects`).*
 
 ### 💡 Usage Examples
 
@@ -112,6 +118,29 @@ netupi> s
 ⚡ Work Session - State: Running
 ⏱️  Elapsed time: 01:23:45
 ```
+#### Project Management
+```bash
+netupi> projects
+📂 Your Projects:
+==================
+Website Redesign: 2 hours 30 minutes
+Client Project: 45 minutes
+
+netupi> today
+📅 Today's Work Summary:
+======================
+Client Project: 45 minutes
+
+netupi> project "Website Redesign"
+📊 Project Details: Website Redesign
+=========================
+Total time: 2 hours 30 minutes
+
+Sessions:
+- 2023-10-05 14:30: End: 2023-10-05 15:00 (30 minutes) | Description: implementing new header
+- 2023-10-04 10:15: End: 2023-10-04 12:45 (2 hours 30 minutes) | Description: redesign layout
+
+```
 
 ### 📁 Data Storage
 
@@ -135,11 +164,15 @@ Netupi23 is actively being developed. Current focus areas:
 - ✅ Auto-stop functionality
 - ✅ Data persistence
 - ✅ Clean CLI interface without display conflicts
+- ✅ Project listing and totals (`projects` command)
+- ✅ Daily work summaries (`today` command)
+- ✅ Project details and session history (`project <name>`)
+- ✅ Delete project sessions (`delete-project <name>`)
 
 **Coming Soon:**
 - [ ] Pause/Resume functionality
-- [ ] Daily summary reports (`today` command)
-- [ ] Project listing (`projects` command)
+- [x] Daily summary reports (`today` command)
+- [x] Project listing (`projects` command)
 - [ ] Configuration customization
 - [ ] Desktop GUI application
 
@@ -165,7 +198,7 @@ This project is licensed under the AGPL 3.0 License - see the [LICENSE](LICENSE.
 
 ## Español
 
-**Inspirado y basado en el trabajo de [4DA](https://github.com/4DA)**  
+**Inspirado y basado en el trabajo de [4DA](https://github.com/4DA)**
 *Todos los reconocimientos a 4DA por el concepto original e inspiración que hizo posible este proyecto.*
 
 Una aplicación de seguimiento de tiempo minimalista escrita en Rust. Perfecta para desarrolladores, freelancers y cualquier persona que quiera rastrear su tiempo de trabajo de manera eficiente.
@@ -174,7 +207,7 @@ Una aplicación de seguimiento de tiempo minimalista escrita en Rust. Perfecta p
 
 - **🍅 Temporizador Pomodoro**: Sesiones de trabajo enfocado de 25 minutos
 - **☕ Temporizador de Descanso**: Sesiones de descanso de 5 minutos
-- **📊 Seguimiento de Tiempo por Proyecto**: Rastrea tiempo en diferentes proyectos con almacenamiento persistente
+- **📊 Seguimiento de Tiempo por Proyecto**: Rastrea tiempo en diferentes proyectos con almacenamiento persistente, incluyendo listado de totales, resúmenes diarios, detalles de sesiones y eliminación
 - **💾 Almacenamiento Local**: Todas las sesiones guardadas localmente en formato JSON
 - **🚀 Modo Interactivo**: Interfaz de línea de comandos intuitiva con historial y auto-completado
 - **⚡ Función de Auto-parada**: Iniciar un nuevo temporizador detiene automáticamente el actual
@@ -194,6 +227,8 @@ cargo run
 
 ### 📋 Comandos Disponibles
 
+### 📋 Comandos Disponibles
+
 | Comando | Alias | Descripción |
 |---------|-------|-------------|
 | `work <nombre-proyecto> [descripción]` | | Iniciar seguimiento de tiempo para un proyecto específico |
@@ -201,11 +236,16 @@ cargo run
 | `break` | | Iniciar un temporizador de descanso de 5 minutos |
 | `stop` | | Detener el temporizador actual y guardar la sesión |
 | `status` | `s` | Mostrar estado actual del temporizador y tiempo transcurrido |
-| `projects` | | Listar todos los proyectos (próximamente) |
-| `today` | | Mostrar resumen del trabajo de hoy (próximamente) |
+| `projects` | | Listar todos los proyectos con tiempo total invertido |
+| `today` | | Mostrar resumen del trabajo de hoy por proyecto |
+| `project <nombre>` | | Mostrar detalles y sesiones para un proyecto específico |
+| `delete-project <nombre>` | | Eliminar todas las sesiones de un proyecto (¡irreversible!) |
 | `help` | `h` | Mostrar comandos disponibles |
 | `clear` | `cls` | Limpiar la pantalla del terminal |
 | `exit` | `quit`, `q` | Salir de la aplicación |
+
+*Modo de comando único: Prefija con `netupi` (ej. `netupi projects`).*
+
 
 ### 💡 Ejemplos de Uso
 
@@ -271,7 +311,29 @@ netupi> s
 ⚡ Sesión de Trabajo - Estado: Ejecutándose
 ⏱️  Tiempo transcurrido: 01:23:45
 ```
+#### Gestión de Proyectos
+```bash
+netupi> projects
+📂 Tus Proyectos:
+==================
+Rediseño Web: 2 horas 30 minutos
+Proyecto Cliente: 45 minutos
 
+netupi> today
+📅 Resumen de Trabajo de Hoy:
+======================
+Proyecto Cliente: 45 minutos
+
+netupi> project "Rediseño Web"
+📊 Detalles del Proyecto: Rediseño Web
+=========================
+Tiempo total: 2 horas 30 minutos
+
+Sesiones:
+- 2023-10-05 14:30: Fin: 2023-10-05 15:00 (30 minutos) | Descripción: implementando nueva cabecera
+- 2023-10-04 10:15: Fin: 2023-10-04 12:45 (2 horas 30 minutos) | Descripción: rediseñar layout
+
+```
 ### 📁 Almacenamiento de Datos
 
 Todos tus datos se almacenan local y seguramente:
@@ -294,11 +356,15 @@ Netupi23 está siendo desarrollado activamente. Áreas de enfoque actuales:
 - ✅ Funcionalidad de auto-parada
 - ✅ Persistencia de datos
 - ✅ Interfaz CLI limpia sin conflictos de visualización
+- ✅ Listado de proyectos y totales (comando `projects`)
+- ✅ Resúmenes diarios de trabajo (comando `today`)
+- ✅ Detalles de proyecto e historial de sesiones (`project <nombre>`)
+- ✅ Eliminar sesiones de proyecto (`delete-project <nombre>`)
 
 **Próximamente:**
 - [ ] Funcionalidad de Pausar/Reanudar
-- [ ] Reportes de resumen diario (comando `today`)
-- [ ] Listado de proyectos (comando `projects`)
+- [x] Reportes de resumen diario (comando `today`)
+- [x] Listado de proyectos (comando `projects`)
 - [ ] Personalización de configuración
 - [ ] Aplicación GUI de escritorio
 
