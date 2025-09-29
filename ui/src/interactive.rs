@@ -304,12 +304,66 @@ impl InteractiveMode {
     }
 
     async fn cmd_projects(&mut self) -> Result<(), PersistenceError> {
-        println!("📂 Projects functionality coming soon!");
+        println!("📂 Your Projects:");
+        println!("==================");
+
+        match self.core.get_projects().await {
+            Ok(projects) => {
+                if projects.is_empty() {
+                    println!("No projects yet. Start working on one with 'work <project>'!");
+                } else {
+                    for (project, duration) in projects {
+                        let total_minutes = duration.num_minutes();
+                        let hours = total_minutes / 60;
+                        let minutes = total_minutes % 60;
+                        if hours > 0 {
+                            println!("{}: {} hours {} minutes", project, hours, minutes);
+                        } else {
+                            println!("{}: {} minutes", project, minutes);
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                println!("❌ Error loading projects: {}", e);
+            }
+        }
+
+        println!();
         Ok(())
     }
 
     async fn cmd_today(&mut self) -> Result<(), PersistenceError> {
-        println!("📅 Today's summary functionality coming soon!");
+        println!("📅 Today's Work Summary:");
+        println!("======================");
+
+        match self.core.get_today_summary().await {
+            Ok(summary) => {
+                let mut today_projects: Vec<(String, chrono::Duration)> =
+                    summary.into_iter().collect();
+                today_projects.sort_by(|a, b| a.0.cmp(&b.0));
+
+                if today_projects.is_empty() {
+                    println!("No work sessions today yet. Get started with 'work <project>'!");
+                } else {
+                    for (project, duration) in today_projects {
+                        let total_minutes = duration.num_minutes();
+                        let hours = total_minutes / 60;
+                        let minutes = total_minutes % 60;
+                        if hours > 0 {
+                            println!("{}: {} hours {} minutes", project, hours, minutes);
+                        } else {
+                            println!("{}: {} minutes", project, minutes);
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                println!("❌ Error loading today's summary: {}", e);
+            }
+        }
+
+        println!();
         Ok(())
     }
 }

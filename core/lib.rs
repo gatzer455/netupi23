@@ -1,5 +1,6 @@
 use chrono::{DateTime, Duration, Utc};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use thiserror::Error;
@@ -345,6 +346,47 @@ impl NetupiCore {
 
     pub async fn get_sessions(&self) -> Result<Vec<WorkSession>, PersistenceError> {
         self.timer_engine.persistence.load_sessions().await
+    }
+
+    pub async fn get_projects(&self) -> Result<Vec<(String, Duration)>, PersistenceError> {
+        let sessions = self.timer_engine.persistence.load_sessions().await?;
+        let mut project_totals: HashMap<String, Duration> = HashMap::new();
+
+        for session in sessions {
+            if session.session_type == TimerType::Stopwatch
+                && session.end_time.is_some()
+                && !session.tags.is_empty()
+            {
+                let project = session.tags[0].clone();
+                let duration = session.duration;
+                *project_totals.entry(project).or_insert(Duration::zero()) += duration;
+            }
+        }
+
+        let mut projects: Vec<(String, Duration)> = project_totals.into_iter().collect();
+        projects.sort_by(|a, b| a.0.cmp(&b.0));
+        Ok(projects)
+    }
+
+    pub async fn get_today_summary(&self) -> Result<HashMap<String, Duration>, PersistenceError> {
+        let sessions = self.timer_engine.persistence.load_sessions().await?;
+        let today = Utc::now().date_naive();
+        let mut project_totals: HashMap<String, Duration> = HashMap::new();
+
+        for session in sessions {
+            if let Some(end_time) = session.end_time {
+                let session_date = end_time.date_naive();
+                if session_date == today
+                    && session.session_type == TimerType::Stopwatch
+                    && !session.tags.is_empty()
+                {
+                    let project = session.tags[0].clone();
+                    *project_totals.entry(project).or_insert(Duration::zero()) += session.duration;
+                }
+            }
+        }
+
+        Ok(project_totals)
     }
 }
 

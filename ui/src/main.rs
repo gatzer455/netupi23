@@ -136,8 +136,9 @@ async fn start_project_timer(
     if let Some(desc) = &description {
         println!("📝 Description: {}", desc);
     }
+    let project_display = project.clone();
 
-    core.timer().start_timer(TimerType::Stopwatch).await?;
+    core.start_work_session(project, description).await?;
     println!("⏰ Work timer started! Use 'netupi stop' to finish and save your session.");
 
     loop {
@@ -150,12 +151,12 @@ async fn start_project_timer(
         if hours > 0 {
             print!(
                 "\r🏗️  {} | {:02}:{:02}:{:02}",
-                project, hours, remaining_minutes, seconds
+                project_display, hours, remaining_minutes, seconds
             );
         } else {
             print!(
                 "\r🏗️  {} | {:02}:{:02}",
-                project, remaining_minutes, seconds
+                project_display, remaining_minutes, seconds
             );
         }
         std::io::Write::flush(&mut std::io::stdout()).unwrap();
@@ -207,15 +208,68 @@ async fn show_work_log(_core: &mut NetupiCore) -> Result<(), PersistenceError> {
     Ok(())
 }
 
-async fn show_projects(_core: &mut NetupiCore) -> Result<(), PersistenceError> {
-    println!("📂 Projects (Coming in next iteration)");
-    println!("This will list all projects you've worked on.");
+async fn show_projects(core: &mut NetupiCore) -> Result<(), PersistenceError> {
+    println!("📂 Your Projects:");
+    println!("==================");
+
+    match core.get_projects().await {
+        Ok(projects) => {
+            if projects.is_empty() {
+                println!(
+                    "No projects yet. Start working on one with 'netupi time-track <project>'!"
+                );
+            } else {
+                for (project, duration) in projects {
+                    let total_minutes = duration.num_minutes();
+                    let hours = total_minutes / 60;
+                    let minutes = total_minutes % 60;
+                    if hours > 0 {
+                        println!("{}: {} hours {} minutes", project, hours, minutes);
+                    } else {
+                        println!("{}: {} minutes", project, minutes);
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            println!("❌ Error loading projects: {}", e);
+        }
+    }
+
+    println!();
     Ok(())
 }
 
-async fn show_today_summary(_core: &mut NetupiCore) -> Result<(), PersistenceError> {
-    println!("📅 Today's Summary (Coming in next iteration)");
-    println!("This will show today's work time breakdown.");
+async fn show_today_summary(core: &mut NetupiCore) -> Result<(), PersistenceError> {
+    println!("📅 Today's Work Summary:");
+    println!("======================");
+
+    match core.get_today_summary().await {
+        Ok(summary) => {
+            let mut today_projects: Vec<(String, chrono::Duration)> = summary.into_iter().collect();
+            today_projects.sort_by(|a, b| a.0.cmp(&b.0));
+
+            if today_projects.is_empty() {
+                println!("No work sessions today yet. Get started with 'netupi work <project>'!");
+            } else {
+                for (project, duration) in today_projects {
+                    let total_minutes = duration.num_minutes();
+                    let hours = total_minutes / 60;
+                    let minutes = total_minutes % 60;
+                    if hours > 0 {
+                        println!("{}: {} hours {} minutes", project, hours, minutes);
+                    } else {
+                        println!("{}: {} minutes", project, minutes);
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            println!("❌ Error loading today's summary: {}", e);
+        }
+    }
+
+    println!();
     Ok(())
 }
 
