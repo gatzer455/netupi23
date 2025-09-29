@@ -1,0 +1,30 @@
+[package]
+name = "netupi_ui"
+version = "0.1.0"
+edition = "2024"
+authors = ["Gazter <gatzervi@proton.me>"]
+
+# This creates a binary named "netupi"
+[[bin]]
+name = "netupi"
+path = "src/main.rs"
+
+[dependencies]
+# Our core functionality
+netupi_core = { path = "../core" }
+
+# Async runtime
+tokio = { version = "1.47", features = ["full"] }
+
+# CLI argument parsing
+clap = { version = "4.0", features = ["derive"] }
+# Interactive readline with history and completion
+rustyline = "14.0"
+# Terminal styling and colors
+crossterm = "0.27"
+# Date and time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+[features]
+default = ["with-file-history"]
+with-file-history = []
