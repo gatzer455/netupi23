@@ -20,6 +20,9 @@ path = "src/main.rs"
 # Our core functionality
 netupi-core = "0.1.1"
 
+# if Deving: 
+# netupi-core = { path = "../core" }
+
 # Async runtime
 tokio = { version = "1.47", features = ["full"] }
 # CLI argument parsing
