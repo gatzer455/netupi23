@@ -11,6 +11,41 @@
 
 A minimalist time tracking application written in Rust. Perfect for developers, freelancers, and anyone who wants to track their work time efficiently.
 
+
+### 📦 Installation
+
+Netupi23 is easy to install. Choose your preferred method:
+
+- **Via Cargo (Recommended for Rust users)**:
+  ```bash
+  cargo install netupi23
+  ```
+
+This installs the `netupi` binary to `~/.cargo/bin`. Add to PATH if needed:
+  ```bash
+  echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+  source ~/.bashrc
+  ```
+
+- **Pre-built Binaries**: Download from [GitHub Releases](https://github.com/gatzer/netupi23/releases).
+  For Linux/macOS:
+  ```bash
+  wget https://github.com/gatzer/netupi23/releases/latest/download/netupi-linux-x64
+  chmod +x netupi-linux-x64
+  sudo mv netupi-linux-x64 /usr/local/bin/netupi  # Or ~/.local/bin for user-local
+  ```
+  For Windows: Download `netupi-windows.exe` and add to PATH.
+
+- **From Source**:
+  Clone and build as in Quick Start, then:
+  ```bash
+  cargo install --path .
+  ```
+
+Run `netupi --help` to verify. Data is stored in `~/.local/share/netupi23/` (Linux/macOS) or `%LOCALAPPDATA%\netupi23` (Windows).
+
+
+
 ### ✨ Current Features
 
 - **🍅 Pomodoro Timer**: 25-minute focused work sessions
@@ -224,6 +259,37 @@ cd netupi23
 # Compilar y ejecutar
 cargo run
 ```
+
+### 📦 Instalación
+
+Netupi23 es fácil de instalar. Elige el método preferido:
+
+- **Vía Cargo (Recomendado para usuarios de Rust)**:
+  ```bash
+  cargo install netupi23
+  ```
+  Esto instala el binario `netupi` en `~/.cargo/bin`. Agrega a PATH si es necesario:
+  ```bash
+  echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+  source ~/.bashrc
+  ```
+
+- **Binarios Precompilados**: Descarga desde [Lanzamientos de GitHub](https://github.com/gatzer/netupi23/releases).
+  Para Linux/macOS:
+  ```bash
+  wget https://github.com/gatzer/netupi23/releases/latest/download/netupi-linux-x64
+  chmod +x netupi-linux-x64
+  sudo mv netupi-linux-x64 /usr/local/bin/netupi  # O ~/.local/bin para instalación local de usuario
+  ```
+  Para Windows: Descarga `netupi-windows.exe` y agrégalo a PATH.
+
+- **Desde el Código Fuente**:
+  Clona y compila como en Inicio Rápido, luego:
+  ```bash
+  cargo install --path .
+  ```
+
+Ejecuta `netupi --help` para verificar. Los datos se almacenan en `~/.local/share/netupi23/` (Linux/macOS) o `%LOCALAPPDATA%\netupi23` (Windows).
 
 ### 📋 Comandos Disponibles
 

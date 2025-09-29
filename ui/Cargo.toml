@@ -18,10 +18,10 @@ path = "src/main.rs"
 
 [dependencies]
 # Our core functionality
-netupi-core = "0.1.1"
+#netupi-core = "0.1.1"
 
 # if Deving: 
-# netupi-core = { path = "../core" }
+netupi-core = { path = "../core" }
 
 # Async runtime
 tokio = { version = "1.47", features = ["full"] }
